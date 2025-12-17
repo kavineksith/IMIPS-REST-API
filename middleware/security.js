@@ -189,7 +189,7 @@ const fileUploadSecurity = async (req, res, next) => {
         // Validate that the file path is under the UPLOAD_ROOT directory
         const uploadFilePath = path.resolve(UPLOAD_ROOT, path.basename(req.file.path));
         if (!uploadFilePath.startsWith(UPLOAD_ROOT)) {
-            await require('fs-extra').unlink(req.file.path);
+            await require('fs-extra').unlink(uploadFilePath);
             return res.status(400).json({
                 message: 'Invalid upload location detected.'
             });
