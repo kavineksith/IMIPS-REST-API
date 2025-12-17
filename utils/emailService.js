@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs-extra');
 const path = require('path');
+const striptags = require('striptags');
 
 class EmailService {
     constructor() {
@@ -419,7 +420,7 @@ class EmailService {
 
     // Utility function to strip HTML tags for plain text version
     stripHtml(html) {
-        return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+        return striptags(html).replace(/\s+/g, ' ').trim();
     }
 }
 
