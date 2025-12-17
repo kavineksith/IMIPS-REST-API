@@ -55,20 +55,9 @@ console.log('All secrets have been generated and written to: ' + outputFile);
 console.log('Open this file, copy values as needed to your .env file, then securely DELETE the file.');
 console.log('If you need secrets printed to stdout, rerun this script with: node scripts/generate-keys.js --stdout');
 
-// Optional: Show secrets to stdout if explicitly requested by a flag
+// Refuse to show secrets on stdout, even if explicitly requested
 if (process.argv.includes('--stdout')) {
-    console.log('\n='.repeat(70));
-    console.log('IMIPS Security Key Generator (SHOWING SECRETS ON STDOUT -- INSECURE)');
-    console.log('='.repeat(70));
-    console.log('\nJWT_SECRET:');
-    console.log(jwtSecret);
-    console.log('\nENCRYPTION_KEY:');
-    console.log(encryptionKey);
-    console.log('\nDB_PASSWORD:');
-    console.log(dbPassword);
-    console.log('\nADMIN_PASSWORD:');
-    console.log(adminPassword);
-    console.log('\n');
+    console.log('Refusing to print sensitive secrets to stdout. Please see the generated-keys.txt file for your generated secrets and handle it securely.');
 }
 console.log('='.repeat(70));
 console.log('IMPORTANT SECURITY NOTES:');
