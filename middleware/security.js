@@ -270,17 +270,27 @@ const preventPathTraversal = (req, res, next) => {
 
 // Enhanced XSS Protection using DOMPurify-like approach
 const xssProtection = (req, res, next) => {
+    // Helper: apply replacement recursively until string no longer changes
+    function replaceAllRecursively(str, pattern, replacement) {
+        let previous;
+        do {
+            previous = str;
+            str = str.replace(pattern, replacement);
+        } while (str !== previous);
+        return str;
+    }
     const sanitize = (obj) => {
         for (let key in obj) {
             if (typeof obj[key] === 'string') {
                 // More comprehensive XSS protection
-                obj[key] = obj[key]
-                    .replace(/[<>]/g, '') // Remove angle brackets
-                    .replace(/javascript:/gi, '')
-                    .replace(/on\w+\s*=/gi, '') // Remove event handlers
-                    .replace(/&lt;/g, '')
-                    .replace(/&gt;/g, '')
-                    .substring(0, 10000); // Limit length
+                let sanitized = obj[key];
+                sanitized = replaceAllRecursively(sanitized, /[<>]/g, '');
+                sanitized = replaceAllRecursively(sanitized, /javascript:/gi, '');
+                sanitized = replaceAllRecursively(sanitized, /on\w+\s*=/gi, ''); // Remove event handlers
+                sanitized = replaceAllRecursively(sanitized, /&lt;/g, '');
+                sanitized = replaceAllRecursively(sanitized, /&gt;/g, '');
+                sanitized = sanitized.substring(0, 10000); // Limit length
+                obj[key] = sanitized;
             } else if (typeof obj[key] === 'object' && obj[key] !== null) {
                 sanitize(obj[key]);
             }
