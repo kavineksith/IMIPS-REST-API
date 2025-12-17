@@ -312,7 +312,7 @@ const initializeDatabase = async () => {
       console.log('\n' + '='.repeat(60));
       console.log('IMPORTANT: Default admin account created!');
       console.log('Email: admin@imips.com');
-      console.log('Password:', defaultPassword);
+      console.log('Password: <hidden> (written to ADMIN_CREDENTIALS.txt)');
       console.log('CHANGE THIS PASSWORD IMMEDIATELY AFTER FIRST LOGIN!');
       console.log('='.repeat(60) + '\n');
 
