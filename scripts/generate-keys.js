@@ -22,32 +22,54 @@ console.log('\n');
 
 // Generate JWT Secret (64 bytes = 128 hex characters)
 const jwtSecret = crypto.randomBytes(64).toString('hex');
-console.log('JWT_SECRET (copy this to your .env file):');
-console.log(jwtSecret);
-console.log('\n');
 
-// Generate Encryption Key (32 bytes = 64 hex characters)
 const encryptionKey = crypto.randomBytes(32).toString('hex');
-console.log('ENCRYPTION_KEY (copy this to your .env file):');
-console.log(encryptionKey);
-console.log('\n');
 
 // Generate secure database password
 const dbPassword = crypto.randomBytes(32).toString('base64')
     .replace(/[+/=]/g, '')
     .substring(0, 32);
-console.log('DB_PASSWORD (secure random password):');
-console.log(dbPassword);
-console.log('\n');
 
 // Generate admin password
 const adminPassword = crypto.randomBytes(16).toString('base64')
     .replace(/[+/=]/g, '')
     .substring(0, 20) + '@1Aa';
-console.log('ADMIN_PASSWORD (use for first login):');
-console.log(adminPassword);
-console.log('\n');
 
+// Save all generated keys to a file, do not print to stdout by default
+const outputFile = path.resolve(__dirname, 'generated-keys.txt');
+const outputContents =
+`# IMIPS Security Key Generator Output
+
+JWT_SECRET=${jwtSecret}
+ENCRYPTION_KEY=${encryptionKey}
+DB_PASSWORD=${dbPassword}
+ADMIN_PASSWORD=${adminPassword}
+
+# Copy each value to your .env file as appropriate, then delete this file securely.
+# DO NOT commit this file to version control.
+`;
+
+fs.writeFileSync(outputFile, outputContents, { encoding: 'utf8', flag: 'w' });
+
+console.log('All secrets have been generated and written to: ' + outputFile);
+console.log('Open this file, copy values as needed to your .env file, then securely DELETE the file.');
+console.log('If you need secrets printed to stdout, rerun this script with: node scripts/generate-keys.js --stdout');
+
+// Optional: Show secrets to stdout if explicitly requested by a flag
+if (process.argv.includes('--stdout')) {
+    console.log('\n='.repeat(70));
+    console.log('IMIPS Security Key Generator (SHOWING SECRETS ON STDOUT -- INSECURE)');
+    console.log('='.repeat(70));
+    console.log('\nJWT_SECRET:');
+    console.log(jwtSecret);
+    console.log('\nENCRYPTION_KEY:');
+    console.log(encryptionKey);
+    console.log('\nDB_PASSWORD:');
+    console.log(dbPassword);
+    console.log('\nADMIN_PASSWORD:');
+    console.log(adminPassword);
+    console.log('\n');
+}
 console.log('='.repeat(70));
 console.log('IMPORTANT SECURITY NOTES:');
 console.log('='.repeat(70));
