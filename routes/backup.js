@@ -147,7 +147,20 @@ router.post('/restore', authenticateToken, requireRole(['Admin']), async (req, r
             return res.status(400).json({ message: 'Backup filename is required' });
         }
 
-        const filepath = path.join(backupDir, filename);
+        // Validate and resolve the file path to prevent path traversal attacks
+        const resolvedPath = path.resolve(backupDir, filename);
+        let realPath;
+        try {
+            realPath = fs.realpathSync(resolvedPath);
+        } catch (err) {
+            return res.status(400).json({ message: 'Invalid backup filename' });
+        }
+        // Ensure the path is within the backup directory
+        if (!realPath.startsWith(backupDir)) {
+            return res.status(403).json({ message: 'Access to the specified backup file is forbidden' });
+        }
+
+        const filepath = realPath;
 
         if (!await fs.pathExists(filepath)) {
             return res.status(404).json({ message: 'Backup file not found' });
