@@ -174,7 +174,13 @@ router.post('/send', authenticateToken, requireRole(['Admin', 'Manager']), uploa
             // Delete the attachment since email failed
             if (attachmentPath) {
                 try {
-                    await fs.unlink(path.join(__dirname, '..', attachmentPath));
+                    // Ensure the path to unlink is strictly within the ATTACHMENTS_DIR
+                    const attachmentAbsolutePath = path.resolve(ATTACHMENTS_DIR, path.basename(attachmentPath));
+                    if (attachmentAbsolutePath.startsWith(ATTACHMENTS_DIR)) {
+                        await fs.unlink(attachmentAbsolutePath);
+                    } else {
+                        console.warn('Attempted to delete a file outside attachments directory:', attachmentAbsolutePath);
+                    }
                 } catch (unlinkError) {
                     console.warn('Could not delete attachment:', unlinkError);
                 }
